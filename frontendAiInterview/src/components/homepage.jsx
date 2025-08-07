@@ -17,8 +17,8 @@ import BusinessIcon from "@mui/icons-material/Business";
 import { motion } from "framer-motion";
 
 const HeroSection = () => (
-  <Box className="page-background" sx={{ textAlign: "center", py: 8 }}>
-    <Container maxWidth="md">
+  <Box className="page-background" sx={{ textAlign: "center", py: { xs: 4, sm: 6, md: 8 }, px: { xs: 1, sm: 2 } }}>
+    <Container maxWidth="md" sx={{ px: { xs: 2, sm: 3 } }}>
       <Typography
         variant="h3"
         align="center"
@@ -34,6 +34,8 @@ const HeroSection = () => (
           textTransform: "uppercase",
           textShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
           mb: 4,
+          fontSize: { xs: "1.8rem", sm: "2.5rem", md: "3rem" },
+          flexWrap: "wrap",
         }}
       >
         {"AI INTERVIEW".split("").map((char, index) => (
@@ -75,15 +77,18 @@ const HeroSection = () => (
           maxWidth: "700px",
           mx: "auto",
           color: "rgba(255, 255, 255, 0.85)",
+          fontSize: { xs: "1rem", sm: "1.15rem", md: "1.25rem" },
+          px: { xs: 2, sm: 0 },
         }}
       >
         Select a company, take an AI interview, and get one step closer to the
         job.
       </Typography>
       <Stack 
-        direction="row" 
-        spacing={2} 
+        direction={{ xs: "column", sm: "row" }}
+        spacing={{ xs: 3, sm: 2 }}
         justifyContent="center"
+        alignItems="center"
         component={motion.div}
         initial="hidden"
         animate="visible"
@@ -97,6 +102,7 @@ const HeroSection = () => (
             }
           }
         }}
+        sx={{ px: { xs: 2, sm: 0 } }}
       >
         <motion.div
           variants={{
@@ -225,6 +231,7 @@ const FeaturesSection = () => {
         position: "relative",
         zIndex: 2,
         color: "rgba(255, 255, 255, 0.9)",
+        px: { xs: 1, sm: 2 },
       }}
     >
       <Container maxWidth="lg">
@@ -243,21 +250,24 @@ const FeaturesSection = () => {
             backgroundClip: "text",
             WebkitBackgroundClip: "text",
             color: "transparent",
+            fontSize: { xs: "1.8rem", sm: "2.5rem", md: "3rem" },
+            px: { xs: 2, sm: 0 },
           }}
         >
           How It Works
         </Typography>
         <Grid
           container
-          spacing={4}
+          spacing={{ xs: 3, sm: 4 }}
           justifyContent="center"
           alignItems="stretch"
+          sx={{ px: { xs: 2, sm: 0 } }}
         >
           {features.map((feature, idx) => (
             <Grid
               item
               xs={12}
-              sm={4}
+              sm={6}
               md={4}
               key={feature.title}
               sx={{
@@ -267,7 +277,7 @@ const FeaturesSection = () => {
             >
               <motion.div
                 variants={cardVariants}
-                style={{ width: "100%", maxWidth: 340, margin: "0 auto" }}
+                style={{ width: "100%", maxWidth: 300, margin: "0 auto" }}
               >
                 <Card
                   elevation={0}
@@ -277,11 +287,11 @@ const FeaturesSection = () => {
                     flexDirection: "column",
                     alignItems: "center",
                     borderRadius: 4,
-                    p: 4,
+                    p: { xs: 3, sm: 4 },
                     transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
                     position: "relative",
                     overflow: "hidden",
-                    maxWidth: 340,
+                    maxWidth: { xs: 300, sm: 340 },
                     mx: "auto",
                     background:
                       "linear-gradient(145deg, rgba(40, 50, 80, 0.4), rgba(20, 30, 50, 0.5))",
@@ -325,13 +335,13 @@ const FeaturesSection = () => {
                 >
                   <Box
                     sx={{
-                      width: 80,
-                      height: 80,
+                      width: { xs: 60, sm: 80 },
+                      height: { xs: 60, sm: 80 },
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       borderRadius: "50%",
-                      fontSize: "2.5rem",
+                      fontSize: { xs: "2rem", sm: "2.5rem" },
                       mb: 3,
                       background: "linear-gradient(135deg, #1e88e5, #1565c0)",
                       boxShadow: "0 4px 20px rgba(26, 115, 232, 0.3)",
@@ -369,6 +379,7 @@ const FeaturesSection = () => {
                       textShadow: "0 1px 2px rgba(0, 0, 0, 0.2)",
                       mb: 2,
                       textAlign: "center",
+                      fontSize: { xs: "1.1rem", sm: "1.5rem" },
                     }}
                   >
                     {feature.title}
@@ -380,7 +391,7 @@ const FeaturesSection = () => {
                       mb: 3,
                       lineHeight: 1.7,
                       color: "rgba(255, 255, 255, 0.85)",
-                      fontSize: "1rem",
+                      fontSize: { xs: "0.9rem", sm: "1rem" },
                     }}
                   >
                     {feature.description}
