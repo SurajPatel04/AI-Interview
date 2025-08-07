@@ -10,7 +10,7 @@ component={props.component}
 to={props.to}
 startIcon={
   <props.icon sx={{ 
-    fontSize: '1.3rem',
+    fontSize: { xs: '1.1rem', sm: '1.3rem' },
     transition: 'transform 0.3s ease',
     'button:hover &': {
       transform: 'scale(1.1)'
@@ -22,13 +22,16 @@ sx={{
   color: 'white',
   textTransform: 'none',
   fontWeight: 600,
-  fontSize: '1.1rem',
-  px: 4,
-  py: 1.5,
+  fontSize: { xs: '0.95rem', sm: '1.1rem' },
+  px: { xs: 3, sm: 4 },
+  py: { xs: 1.2, sm: 1.5 },
   borderRadius: 3,
   boxShadow: '0 4px 20px rgba(0, 199, 174, 0.3)',
   position: 'relative',
   overflow: 'hidden',
+  minWidth: { xs: '140px', sm: 'auto' },
+  width: { xs: '100%', sm: 'auto' },
+  maxWidth: { xs: '280px', sm: 'none' },
   '&:hover': {
     transform: 'translateY(-2px)',
     boxShadow: '0 8px 25px rgba(0, 199, 174, 0.4)',
