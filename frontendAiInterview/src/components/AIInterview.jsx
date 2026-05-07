@@ -75,7 +75,59 @@ const AIInterview = () => {
   const recognitionRef = useRef(null);
   const initialMessageSent = useRef(false);
   const audioToggleRef = useRef(false);
+  const isAudioPlayingRef = useRef(false);
+  const isInterviewActiveRef = useRef(false);
+  const isMicOnRef = useRef(false);
+  const noSpeechCountRef = useRef(0);
+  const silenceTimerRef = useRef(null);
+  const inputValueRef = useRef('');
+  const isLoadingRef = useRef(false);
 
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    isAudioPlayingRef.current = isAudioPlaying;
+  }, [isAudioPlaying]);
+
+  useEffect(() => {
+    isInterviewActiveRef.current = isInterviewActive;
+  }, [isInterviewActive]);
+
+  useEffect(() => {
+    isMicOnRef.current = isMicOn;
+  }, [isMicOn]);
+
+  useEffect(() => {
+    inputValueRef.current = inputValue;
+  }, [inputValue]);
+
+  useEffect(() => {
+    isLoadingRef.current = isLoading;
+  }, [isLoading]);
+
+  // Pause/resume speech recognition based on audio playback
+  useEffect(() => {
+    if (isAudioPlaying) {
+      // AI audio is playing — stop listening so mic doesn't pick up AI speech
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {
+          // ignore if already stopped
+        }
+      }
+      setIsListening(false);
+    } else {
+      // Audio finished — resume listening if interview is active and mic is on
+      if (isInterviewActive && isMicOn) {
+        setTimeout(() => {
+          if (!isAudioPlayingRef.current && isInterviewActiveRef.current && isMicOnRef.current) {
+            startSpeechRecognition();
+          }
+        }, 600);
+      }
+    }
+  }, [isAudioPlaying]);
 
   useEffect(() => {
     let isHandlingVisibilityChange = false;
@@ -464,6 +516,12 @@ const AIInterview = () => {
   const playAudio = (audioUrl) => {
     if (!audioUrl) return;
     
+    // Stop speech recognition before playing audio
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch (e) { /* ignore */ }
+    }
+    setIsListening(false);
+    
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
@@ -484,6 +542,12 @@ const AIInterview = () => {
 
   const playAudioFromBase64 = (audioBase64) => {
     if (!audioBase64) return;
+    
+    // Stop speech recognition before playing audio
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch (e) { /* ignore */ }
+    }
+    setIsListening(false);
     
     try {
       if (audioRef.current) {
@@ -528,6 +592,12 @@ const AIInterview = () => {
   const playAudioFromBuffer = (audioBuffer) => {
     if (!audioBuffer) return;
     
+    // Stop speech recognition before playing audio
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch (e) { /* ignore */ }
+    }
+    setIsListening(false);
+    
     try {
       if (audioRef.current) {
         audioRef.current.pause();
@@ -569,6 +639,11 @@ const AIInterview = () => {
 
   
   const stopAllMedia = () => {
+    // Clear silence timer
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
     if (stream) {
       stream.getTracks().forEach(track => track.stop());
       setStream(null);
@@ -636,6 +711,15 @@ const AIInterview = () => {
       let interimTranscript = '';
       let finalText = '';
       
+      // Reset no-speech counter on any speech detection
+      noSpeechCountRef.current = 0;
+      
+      // Clear any existing silence timer while user is speaking
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current);
+        silenceTimerRef.current = null;
+      }
+      
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i];
         const transcript = result[0].transcript;
@@ -661,23 +745,68 @@ const AIInterview = () => {
         });
         
         setTranscript('');
+        
+        // Start 7-second silence timer after final transcript
+        // If user doesn't speak for 7 seconds, auto-send the message
+        silenceTimerRef.current = setTimeout(() => {
+          const currentInput = inputValueRef.current;
+          if (currentInput && currentInput.trim() && !isLoadingRef.current && !isAudioPlayingRef.current) {
+            // Trigger auto-send
+            handleAutoSend();
+          }
+          silenceTimerRef.current = null;
+        }, 7000);
       }
     };
     
     recognition.onerror = (event) => {
       console.error('Speech recognition error:', event.error);
-      setIsListening(false);
       
-      if (event.error === 'no-speech' || event.error === 'audio-capture') {
-        toast.error('Microphone not detecting speech. Please check your microphone.');
+      if (event.error === 'no-speech') {
+        // no-speech is normal when user is idle — don't show error toast
+        // Only warn if it happens many times consecutively (mic issue)
+        noSpeechCountRef.current += 1;
+        if (noSpeechCountRef.current >= 5) {
+          toast.warning('Microphone not detecting speech. Please check your microphone.', {
+            toastId: 'no-speech-warning',
+            autoClose: 4000
+          });
+          noSpeechCountRef.current = 0;
+        }
+        return; // Don't set isListening to false — onend will handle restart
       }
+      
+      if (event.error === 'audio-capture') {
+        toast.error('Microphone not available. Please check your microphone.', {
+          toastId: 'audio-capture-error'
+        });
+        setIsListening(false);
+        return;
+      }
+      
+      if (event.error === 'aborted') {
+        // Aborted is expected when we programmatically stop recognition
+        return;
+      }
+      
+      setIsListening(false);
     };
     
     recognition.onend = () => {
       setIsListening(false);
       
-      if (isInterviewActive) {
+      // Don't restart if audio is playing (AI is speaking)
+      if (isAudioPlayingRef.current) {
+        return;
+      }
+      
+      // Only restart if interview is active and mic is on (use refs for current values)
+      if (isInterviewActiveRef.current && isMicOnRef.current) {
         setTimeout(() => {
+          // Double-check conditions haven't changed during the timeout
+          if (isAudioPlayingRef.current || !isInterviewActiveRef.current || !isMicOnRef.current) {
+            return;
+          }
           try {
             recognition.start();
           } catch (error) {
@@ -686,10 +815,13 @@ const AIInterview = () => {
         }, 500);
       }
     };
+
     
     recognitionRef.current = recognition;
     
     try {
+      // Reset no-speech counter when starting fresh
+      noSpeechCountRef.current = 0;
       recognition.start();
     } catch (error) {
       console.error('Error starting speech recognition:', error);
@@ -699,6 +831,11 @@ const AIInterview = () => {
 
 
   const stopSpeechRecognition = () => {
+    // Clear silence timer
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
     if (recognitionRef.current) {
       try {
         recognitionRef.current.stop();
@@ -798,12 +935,56 @@ const AIInterview = () => {
     }
   };
 
+  // Auto-send function called by the 5-second silence timer
+  const handleAutoSend = () => {
+    const currentInput = inputValueRef.current;
+    if (!currentInput || !currentInput.trim()) return;
+    if (!socketRef.current || !socketConnected) return;
+    if (isLoadingRef.current || isAudioPlayingRef.current) return;
+    
+    // Clear any remaining silence timer
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
+    
+    const userText = currentInput.trim();
+    const newMessage = {
+      id: Date.now(),
+      sender: 'user',
+      text: userText,
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, newMessage]);
+    setInputValue('');
+    setFinalTranscript('');
+    setTranscript('');
+    setIsLoading(true);
+    
+    try {
+      socketRef.current.emit('sendAnswer', {
+        sessionId: sessionId,
+        answer: userText
+      });
+    } catch (error) {
+      console.error('Error auto-sending message:', error);
+      setIsLoading(false);
+    }
+  };
+
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
     if (!socketRef.current || !socketConnected) {
       toast.error('Not connected to interview server. Please wait or refresh the page.');
       return;
+    }
+    
+    // Clear silence timer since user is manually sending
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
     }
     
     const userText = inputValue.trim();
@@ -868,9 +1049,8 @@ const AIInterview = () => {
           setIsInterviewActive(true);
           setTabSwitchCount(0);
           
-          setTimeout(() => {
-            startSpeechRecognition();
-          }, 1000);
+          // Don't start speech recognition here — it will auto-start
+          // when the first AI audio finishes via the isAudioPlaying useEffect
           
           toast.success("Interview started! You can now speak or type your responses.");
           

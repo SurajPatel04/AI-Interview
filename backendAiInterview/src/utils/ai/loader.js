@@ -1,6 +1,6 @@
-import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
+import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf"
 
-const fileLoading = async(filePath)=>{
+const fileLoading = async (filePath) => {
     const file = filePath
     const loader = new PDFLoader(file);
 

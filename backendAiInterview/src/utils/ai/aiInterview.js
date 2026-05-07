@@ -1,4 +1,4 @@
-import {llmFalse} from "./llm.js";
+import { llmFalse } from "./llm.js";
 import { z } from "zod";
 import client from "../reddisClient.js";
 
@@ -13,13 +13,13 @@ const explanationOutputSchema = z.object({
 
 const aiInterview = async (
   sessionId,
-  resume, 
-  position, 
-  numberOfQuestionLeft, 
-  experienceLevel, 
-  previousConversation, 
-  user="Let’s start the interview.", 
-  interviewMode="Guided Mode") => {
+  resume,
+  position,
+  numberOfQuestionLeft,
+  experienceLevel,
+  previousConversation,
+  user = "Let’s start the interview.",
+  interviewMode = "Guided Mode") => {
 
   if (user.startsWith("//explain")) {
     const previousConversationArray = previousConversation || [];
@@ -28,12 +28,12 @@ const aiInterview = async (
     if (!lastAI) {
       return { question: "There is no previous question to explain.", explanation: null };
     }
-    
-    if (previousConversationArray.length && previousConversationArray[previousConversationArray.length-1].role === "ai"){
+
+    if (previousConversationArray.length && previousConversationArray[previousConversationArray.length - 1].role === "ai") {
       previousConversationArray.pop();
     }
     await client.hset(sessionId, "messages", JSON.stringify(previousConversationArray));
-    
+
     const explanationSystemPrompt = `You are a helpful technical assistant. Your only job is to provide a clear, concise, and easy-to-understand explanation means (explain the answer of the question) and also give answer point wise for the technical interview question you are given and then add this "type //yes for next question"
 
     STRICT INSTRUCTIONS:
@@ -49,13 +49,13 @@ const aiInterview = async (
     ]);
 
     return {
-      question: lastAI.content, 
+      question: lastAI.content,
       explanation: explanationResponse.explanation
     };
   }
 
 
-  if (numberOfQuestionLeft <= 0) { 
+  if (numberOfQuestionLeft <= 0) {
     const endSystemPromt = `You are a helpful assistant whose only job is to formally end an interview. You will be given the entire interview conversation for context, but you will not comment on it.
     YOUR TASK:
     Provide a polite, standardized closing statement.
@@ -70,8 +70,8 @@ const aiInterview = async (
     "Your interview is over. Thank you for speaking with me today. You can see the detail analysis of this interview in your profile in some time."`;
 
     const endResponse = await llmFalse.invoke([
-        { role: "system", content: endSystemPromt },
-        { role: "user", content: "The interview is over."}
+      { role: "system", content: endSystemPromt },
+      { role: "user", content: "The interview is over." }
     ]);
     return { question: endResponse.content };
   }
@@ -99,12 +99,20 @@ const aiInterview = async (
   4.INTERVIEW FLOW:
   - Start the interview with your first question, with a greeting, and then in the same response, the question should be directly related to a specific project or skill listed on the resume.
   - After each answer, decide to drill down or ask a new question.
+
+  5. ANSWER EVALUATION AND FOLLOW-UP LOGIC:
+  - Evaluate whether the candidate's answer is technically correct, partially correct, vague, or incorrect.
+  - If the answer is partially correct or vague, ask one follow-up question to clarify or probe deeper.
+  - If the candidate gives an incorrect, irrelevant, or "I don't know" type answer twice consecutively for the same topic, stop drilling into that topic and smoothly move to a different question or skill area.
+  - Do not repeatedly pressure the candidate on the same topic after one failed attempts.
+  - Keep the interview flowing naturally and professionally.
+  - If moving onto the next question, briefly acknowledge the response and transition naturally to the next topic.
   `;
-  
+
   const structuredLlm = llmFalse.withStructuredOutput(interviewOutputSchema);
-  
+
   const messages = [
-    { role: "system", content: systemPrompt},
+    { role: "system", content: systemPrompt },
     { role: "user", content: user }
   ];
 

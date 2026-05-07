@@ -7,9 +7,9 @@ const ttsClient = new textToSpeech.TextToSpeechClient();
 async function generateAudioFile(text, fileName) {
   const [response] = await ttsClient.synthesizeSpeech({
     input: { text },
-    voice: { 
-      languageCode: 'en-US', 
-      name: 'en-US-Neural2-D' // or 'en-US-Wavenet-D'
+    voice: {
+      languageCode: 'en-US',
+      name: 'en-US-WaveNet-D' // or 'en-US-Wavenet-D'
     },
     audioConfig: { audioEncoding: 'MP3' },
   });

@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import axios from 'axios';
-import { setUserData, clearAllUserData, getUserData } from '../utils/auth';
+import { setUserData, clearAllUserData, getUserData, setAccessToken } from '../utils/auth';
 
 const AuthContext = createContext();
 
@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
+  const refreshIntervalRef = useRef(null);
 
 
   const verifyAuthentication = useCallback(async () => {
@@ -48,6 +49,76 @@ export const AuthProvider = ({ children }) => {
       setIsInitialized(true);
     }
   }, []);
+
+  // Silent token refresh — calls backend refresh token API every 28 minutes
+  const silentRefresh = useCallback(async () => {
+    try {
+      const refreshToken = localStorage.getItem('refreshToken');
+      
+      const response = await axios.post(
+        "/api/v1/user/refreshToken",
+        { refreshToken },
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "application/json" },
+          timeout: 10000,
+        }
+      );
+
+      if (response.status === 200 && response.data.success) {
+        const { accessToken, refreshToken: newRefreshToken } = response.data.data;
+        
+        // Update tokens in localStorage
+        if (accessToken) {
+          setAccessToken(accessToken);
+        }
+        if (newRefreshToken) {
+          localStorage.setItem('refreshToken', newRefreshToken);
+        }
+        
+        console.log('Token silently refreshed at', new Date().toLocaleTimeString());
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error('Silent token refresh failed:', err);
+      // If refresh fails, the user session is invalid — log them out
+      clearAllUserData();
+      setUser(null);
+      return false;
+    }
+  }, []);
+
+  // Set up 28-minute silent refresh interval when user is authenticated
+  useEffect(() => {
+    if (user) {
+      // Clear any existing interval
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+
+      const REFRESH_INTERVAL = 28 * 60 * 1000; // 28 minutes
+
+      // Start the interval
+      refreshIntervalRef.current = setInterval(() => {
+        silentRefresh();
+      }, REFRESH_INTERVAL);
+
+    } else {
+      // User logged out — clear the interval
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+        refreshIntervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+        refreshIntervalRef.current = null;
+      }
+    };
+  }, [user, silentRefresh]);
 
 
   const logout = useCallback(async () => {
@@ -108,6 +179,7 @@ export const AuthProvider = ({ children }) => {
     isInitialized,
     isAuthenticated: !!user,
     verifyAuthentication,
+    silentRefresh,
     login,
     logout,
   };

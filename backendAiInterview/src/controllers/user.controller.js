@@ -147,7 +147,7 @@ const refreshAccessToken = asyncHandler(async(req, res)=>{
             throw new ApiError(401, "Refresh Token is expred or used");
         }
 
-        const {newRefreshToken, newAccessToken} = await generateAccessAndRefreshToken(user._id);
+        const {accessToken: newAccessToken, refreshToken: newRefreshToken} = await generateAccessAndRefreshToken(user._id);
 
         const options = {
             httpOnly: true, 
@@ -198,6 +198,7 @@ export {
     userLogin,
     userLogout,
     getCurrentUser,
+    refreshAccessToken,
     test,
     verifyToken,
     getCurentUserWithUserHistory
