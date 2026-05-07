@@ -18,7 +18,6 @@ A full-stack AI-powered interview platform that helps users practice and prepare
 - MongoDB with Mongoose ODM (Stores User Auth & Application Data)
 - Supabase (Used strictly for File Storage, e.g., Resumes)
 - Redis for caching and session management
-- WebRTC (Mediasoup / LiveKit) & Socket.io for real-time video/audio
 - JSON Web Tokens (JWT) for authentication
 - AI / LLM capabilities via LangChain and Google Gemini
 - Google Cloud Text-to-Speech & Piper (Local TTS engine)
