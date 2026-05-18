@@ -7,14 +7,14 @@ const historySessionSchema = new mongoose.Schema({
         required: true,
         index: true
     },
-    interviewName: {type: String},
+    interviewName: { type: String },
     interviewMode: {
         type: String,
         enum: ["Guided Mode", "Hard Mode"],
         default: "Medium Mode",
         index: true
     },
-    mockInterViewName: {type: String},
+    mockInterViewName: { type: String },
     resumeSummary: { type: String },
     experienceLevel: { type: String, index: true },
     position: { type: String, index: true },
@@ -31,7 +31,7 @@ const historySessionSchema = new mongoose.Schema({
     numberOfQuestions: { type: Number, index: true },
     overAllRating: { type: Number },
     overallTechnicalKnowledge: { type: Number },
-    overallProblemSolving: { type: Number }, 
+    overallProblemSolving: { type: Number },
     overallCommunicationClarity: { type: Number },
     qaItems: [{
         question: { type: String, required: true },
@@ -39,8 +39,7 @@ const historySessionSchema = new mongoose.Schema({
         feedback: { type: String },
         rating: { type: Number },
         suggestedAnswer: { type: String, default: null },
-        technicalKnowledge: { type: Number },
-        problemSolvingSkills: { type: Number },
+        answerCorrectness: { type: Number },
         communicationClarity: { type: Number },
     }]
 

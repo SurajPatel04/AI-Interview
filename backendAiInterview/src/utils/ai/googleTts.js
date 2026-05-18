@@ -9,7 +9,7 @@ async function generateAudioFile(text, fileName) {
     input: { text },
     voice: {
       languageCode: 'en-US',
-      name: 'en-US-WaveNet-D' // or 'en-US-Wavenet-D'
+      name: 'en-US-WaveNet-D',
     },
     audioConfig: { audioEncoding: 'MP3' },
   });

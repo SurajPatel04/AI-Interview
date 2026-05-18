@@ -1,18 +1,18 @@
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { ChatVertexAI } from "@langchain/google-vertexai";
 import { configDotenv } from "dotenv";
 
 configDotenv({ path: "../../../.env" });
 
-const llmFalse = new ChatGoogleGenerativeAI({
+const llmFalse = new ChatVertexAI({
     model: "gemini-2.5-flash",
+    temperature: 0,
     maxRetries: 2,
-    temperature: 0
 });
 
-const llmPro = new ChatGoogleGenerativeAI({
+const llmPro = new ChatVertexAI({
     model: "gemini-2.5-flash",
+    temperature: 0,
     maxRetries: 2,
-    temperature: 0
-})
+});
 
-export { llmPro, llmFalse };
+export { llmFalse, llmPro };

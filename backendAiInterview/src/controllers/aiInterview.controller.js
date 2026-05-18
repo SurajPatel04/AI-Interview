@@ -211,8 +211,7 @@ const aiInterviewAnalysis = asyncHandler(async (req, res) => {
                 feedback: item.feedback,
                 rating: item.rating || 0,
                 suggestedAnswer: item.suggestedAnswer,
-                technicalKnowledge: item.technicalKnowledge,
-                problemSolvingSkills: item.problemSolvingSkills,
+                answerCorrectness: item.answerCorrectness,
                 communicationClarity: item.communicationClarity
             };
         });
