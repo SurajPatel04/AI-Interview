@@ -104,9 +104,6 @@ const FeatureCard = React.memo(({ icon: IconComponent, title, description, index
   return (
     <motion.div
       variants={itemVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
       style={{
         display: "flex",
         flexDirection: isMobile ? "column" : (isReversed ? "row-reverse" : "row"),
@@ -116,11 +113,7 @@ const FeatureCard = React.memo(({ icon: IconComponent, title, description, index
         width: "100%",
       }}
     >
-      <Box
-        component={motion.div}
-        whileHover={{ y: -4 }}
-        sx={cardStyles}
-      >
+      <Box sx={cardStyles}>
         <Box sx={iconContainerStyles}>
           <IconComponent sx={{ fontSize: { xs: 30, sm: 40 }, color: color }} />
         </Box>
@@ -149,11 +142,7 @@ const FeatureCard = React.memo(({ icon: IconComponent, title, description, index
         </Typography>
       </Box>
 
-      <Box
-        component={motion.div}
-        whileHover={{ scale: 1.02 }}
-        sx={placeholderStyles}
-      >
+      <Box sx={placeholderStyles}>
         {index + 1}
       </Box>
     </motion.div>
@@ -251,10 +240,7 @@ const Features = () => {
 
   return (
     <Box
-      component={motion.section}
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
+      component="section"
       id="features"
       sx={containerStyles}
     >
@@ -277,21 +263,21 @@ const Features = () => {
             {titleChars.map((char, index) => (
               <motion.span
                 key={index}
-                animate={!isMobile ? {
-                  y: [0, -10, 0],
-                  scale: [1, 1.1, 1],
-                  textShadow: [
-                    "0 2px 10px rgba(0, 0, 0, 0.2)",
-                    "0 5px 20px rgba(0, 199, 174, 0.5)",
-                    "0 2px 10px rgba(0, 0, 0, 0.2)",
-                  ],
-                } : {}}
+                initial={{ opacity: 0, y: -20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                animate={{ y: [0, -5, 0] }}
+                viewport={{ once: true }}
                 transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  delay: index * 0.05,
-                  ease: [0.4, 0, 0.2, 1],
-                  times: [0, 0.5, 1],
+                  y: {
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: index * 0.1,
+                  },
+                  opacity: {
+                    duration: 0.5,
+                    delay: index * 0.05,
+                  }
                 }}
                 style={{
                   display: "inline-block",

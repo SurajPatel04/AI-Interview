@@ -191,7 +191,6 @@ const FeatureItem = memo(({ feature, index, theme }) => (
           fontSize: { xs: "1rem", sm: "1.2rem" },
           mr: { xs: 1, sm: 1.5 },
           flexShrink: 0,
-          filter: 'drop-shadow(0 0 5px rgba(0, 191, 165, 0.7))',
           transition: 'all 0.3s ease',
         }}
       />
@@ -215,8 +214,7 @@ const PricingCard = memo(({ plan, index, theme }) => {
     border: plan.highlight
       ? `2px solid ${theme.palette.primary.main}`
       : "1px solid rgba(255, 255, 255, 0.1)",
-    background: "rgba(15, 23, 42, 0.7)",
-    backdropFilter: "blur(10px)",
+    background: "rgba(15, 23, 42, 0.95)",
     position: "relative",
     "&:hover": {
       boxShadow: plan.highlight
@@ -250,9 +248,6 @@ const PricingCard = memo(({ plan, index, theme }) => {
     <motion.div
       variants={itemVariants}
       custom={index}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
       whileHover="hover"
       whileTap="tap"
       style={{ height: '100%' }}
@@ -456,6 +451,8 @@ const Pricing = memo(() => {
   const subtitleStyles = useMemo(() => ({
     color: "#94a3b8",
     maxWidth: { xs: '90%', sm: 700 },
+    mx: "auto",
+    textAlign: "center",
     fontSize: { xs: '1rem', sm: '1.25rem' },
     px: { xs: 2, sm: 0 },
   }), []);

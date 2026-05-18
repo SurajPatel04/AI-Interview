@@ -45,14 +45,14 @@ const ProfilePaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
   borderRadius: '12px',
   marginBottom: theme.spacing(3),
-  background: 'rgba(26, 31, 46, 0.8)',
-  backdropFilter: 'blur(20px)',
+  background: 'rgba(26, 31, 46, 0.95)',
   border: '1px solid rgba(29, 233, 182, 0.3)',
   boxShadow: '0 4px 20px rgba(29, 233, 182, 0.15)',
   color: '#fff',
   position: 'relative',
   overflow: 'hidden',
   transition: 'all 0.3s ease',
+  willChange: 'transform',
   '&::before': {
     content: '""',
     position: 'absolute',
@@ -74,8 +74,7 @@ const HistoryPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
   borderRadius: '12px',
   minHeight: '300px',
-  background: 'rgba(26, 31, 46, 0.8)',
-  backdropFilter: 'blur(20px)',
+  background: 'rgba(26, 31, 46, 0.95)',
   border: '1px solid rgba(29, 233, 182, 0.3)',
   boxShadow: '0 4px 20px rgba(29, 233, 182, 0.15)',
   color: '#fff',
@@ -83,6 +82,7 @@ const HistoryPaper = styled(Paper)(({ theme }) => ({
   overflow: 'hidden',
   marginBottom: theme.spacing(2),
   transition: 'all 0.3s ease',
+  willChange: 'transform',
   '&::before': {
     content: '""',
     position: 'absolute',
@@ -455,7 +455,6 @@ export default memo(function UserDashboard() {
     return (
       <motion.div
         key={interview.id}
-        layout
         variants={itemVariants}
         onClick={() => handleExpandInterview(interview.id)}
         style={{ 
@@ -629,12 +628,7 @@ export default memo(function UserDashboard() {
                   </Typography>
                   <List dense sx={{ maxHeight: '400px', overflowY: 'auto', pr: 2, scrollbarGutter: 'stable' }}>
                     {questions.map((q, index) => (
-                      <motion.div
-                        key={q._id || index}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                      >
+                      <Box key={q._id || index}>
                         <ListItem sx={{ 
                           px: 0, 
                           py: 2,
@@ -720,7 +714,7 @@ export default memo(function UserDashboard() {
                                 </Typography>
                                 
                                 {/* Technical Breakdown */}
-                                {(q.technicalKnowledge !== undefined || q.problemSolvingSkills !== undefined || q.communicationClarity !== undefined) && (
+                                {(q.answerCorrectness !== undefined || q.communicationClarity !== undefined) && (
                                   <Box sx={{ mb: 2 }}>
                                     <Typography variant="caption" sx={{ 
                                       color: '#1de9b6', 
@@ -731,25 +725,13 @@ export default memo(function UserDashboard() {
                                       Detailed Scores:
                                     </Typography>
                                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                                      {q.technicalKnowledge !== undefined && (
+                                      {q.answerCorrectness !== undefined && (
                                         <Chip 
-                                          label={`Tech: ${q.technicalKnowledge}/10`} 
+                                          label={`Correctness: ${q.answerCorrectness}/10`} 
                                           size="small" 
                                           sx={{ 
-                                            backgroundColor: `${getRatingColor(q.technicalKnowledge)}20`,
-                                            color: getRatingColor(q.technicalKnowledge),
-                                            fontSize: '0.65rem',
-                                            fontWeight: 600
-                                          }} 
-                                        />
-                                      )}
-                                      {q.problemSolvingSkills !== undefined && (
-                                        <Chip 
-                                          label={`Problem Solving: ${q.problemSolvingSkills}/10`} 
-                                          size="small" 
-                                          sx={{ 
-                                            backgroundColor: `${getRatingColor(q.problemSolvingSkills)}20`,
-                                            color: getRatingColor(q.problemSolvingSkills),
+                                            backgroundColor: `${getRatingColor(q.answerCorrectness)}20`,
+                                            color: getRatingColor(q.answerCorrectness),
                                             fontSize: '0.65rem',
                                             fontWeight: 600
                                           }} 
@@ -788,7 +770,7 @@ export default memo(function UserDashboard() {
                             secondaryTypographyProps={{ component: 'div' }}
                           />
                         </ListItem>
-                      </motion.div>
+                      </Box>
                     ))}
                   </List>
                 </CardContent>

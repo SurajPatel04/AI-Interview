@@ -482,9 +482,9 @@ export default function LoginPage() {
             width: "60vw",
             height: "60vw",
             background:
-              "radial-gradient(circle at center, #00bfa5, transparent 70%)",
-            filter: "blur(200px)",
+              "radial-gradient(circle at center, rgba(0, 191, 165, 0.25), transparent 70%)",
             zIndex: 1,
+            willChange: "transform",
           },
         }}
       >
@@ -502,6 +502,7 @@ export default function LoginPage() {
             background: "rgba(255,255,255,0.05)",
             boxShadow: "0 0 60px rgba(29,233,182,0.4)",
             border: "1px solid rgba(29,233,182,0.5)",
+            willChange: "transform",
           }}
         >
           <Typography

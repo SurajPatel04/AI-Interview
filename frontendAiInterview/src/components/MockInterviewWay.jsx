@@ -64,8 +64,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
   width: '100%',
   borderRadius: 16,
   overflow: 'hidden',
-  background: 'rgba(255, 255, 255, 0.03)',
-  backdropFilter: 'blur(12px)',
+  background: 'rgba(26, 31, 46, 0.95)',
   border: '1px solid rgba(255, 255, 255, 0.1)',
   boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.36)',
   transition: 'transform 0.3s ease, box-shadow 0.3s ease',
@@ -363,7 +362,6 @@ const MockInterviewWay = () => {
       sx={{
         background: 'linear-gradient(-45deg, #0a0f1a, #1a1a2e, #16213e, #0d1b2a)',
         backgroundSize: '400% 400%',
-        animation: `${gradient} 15s ease infinite`,
         color: '#fff',
         minHeight: '100vh',
         display: 'flex',
@@ -401,7 +399,6 @@ const MockInterviewWay = () => {
         borderRadius: '50%',
         background: 'radial-gradient(circle, rgba(0, 191, 165, 0.15) 0%, rgba(0, 172, 193, 0) 70%)',
         zIndex: 0,
-        animation: `${pulse} 8s ease-in-out infinite`,
       }} />
       <Box sx={{
         position: 'fixed',
@@ -412,7 +409,6 @@ const MockInterviewWay = () => {
         borderRadius: '50%',
         background: 'radial-gradient(circle, rgba(0, 172, 193, 0.1) 0%, rgba(0, 172, 193, 0) 70%)',
         zIndex: 0,
-        animation: `${pulse} 10s ease-in-out infinite 2s`,
       }} />
 
       <motion.div

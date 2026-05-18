@@ -10,27 +10,22 @@ html, body, #root {
 /* Animated teal glow for dashboard */
 .dashboard-glow {
   pointer-events: none;
-  background: radial-gradient(circle at 60% 40%, #00bfa5 0%, #1de9b6 30%, transparent 70%);
-  filter: blur(120px);
+  background: radial-gradient(circle at 60% 40%, rgba(0, 191, 165, 0.35) 0%, rgba(29, 233, 182, 0.15) 40%, transparent 70%);
   opacity: 0.7;
-  animation: dashboardGlowAnim 8s ease-in-out infinite alternate;
 }
 
 @keyframes dashboardGlowAnim {
   0% {
     transform: scale(1) translate(0px, 0px);
     opacity: 0.7;
-    background: radial-gradient(circle at 60% 40%, #00bfa5 0%, #1de9b6 30%, transparent 70%);
   }
   50% {
     transform: scale(1.07) translate(30px, 20px);
     opacity: 1;
-    background: radial-gradient(circle at 50% 60%, #1de9b6 0%, #00bfa5 40%, transparent 70%);
   }
   100% {
     transform: scale(1) translate(0px, 0px);
     opacity: 0.7;
-    background: radial-gradient(circle at 60% 40%, #00bfa5 0%, #1de9b6 30%, transparent 70%);
   }
 }
 
@@ -85,4 +80,38 @@ html, body, #root {
   background: rgba(255, 255, 255, 0.05);
   box-shadow: 0 0 60px rgba(29, 233, 182, 0.4);
   border: 1px solid rgba(29, 233, 182, 0.5);
+  will-change: transform;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+@keyframes micPulse {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(0, 191, 165, 0.4);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 0 8px rgba(0, 191, 165, 0);
+    transform: scale(1.1);
+  }
+}
+
+@keyframes voiceWave {
+  0%, 100% { 
+    transform: scaleY(0.3);
+    opacity: 0.4;
+  }
+  50% { 
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes micIconPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }

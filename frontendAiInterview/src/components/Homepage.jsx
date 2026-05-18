@@ -49,12 +49,10 @@ const letterVariants = {
 
 const bouncingAnimation = {
   y: [0, -8, 0],
-  scale: [1, 1.05, 1],
   transition: {
-    duration: 2.5,
+    duration: 3,
     repeat: Infinity,
     ease: "easeInOut",
-    times: [0, 0.5, 1],
   }
 };
 
@@ -320,8 +318,7 @@ const FeatureCard = memo(({ feature, index }) => {
     overflow: "hidden",
     maxWidth: { xs: 350, sm: 380 },
     mx: "auto",
-    background: "linear-gradient(145deg, rgba(40, 50, 80, 0.6), rgba(30, 40, 70, 0.7))",
-    backdropFilter: "blur(15px)",
+    background: "linear-gradient(145deg, rgba(40, 50, 80, 0.95), rgba(30, 40, 70, 0.95))",
     border: "1px solid rgba(0, 229, 201, 0.2)",
     boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -461,17 +458,6 @@ const FeaturesSection = memo(() => {
         rgba(0, 229, 201, 0.08) 0%, 
         rgba(30, 136, 229, 0.05) 50%, 
         transparent 70%)`,
-      animation: "breathe 6s ease-in-out infinite",
-      "@keyframes breathe": {
-        "0%, 100%": { 
-          transform: "scale(1)",
-          opacity: 0.3 
-        },
-        "50%": { 
-          transform: "scale(1.05)",
-          opacity: 0.5 
-        },
-      }
     },
   }), []);
 
@@ -489,16 +475,10 @@ const FeaturesSection = memo(() => {
     backgroundClip: "text",
     WebkitBackgroundClip: "text",
     color: "transparent",
-    animation: "gradientText 4s ease infinite",
     fontFamily: '"Inter", "Segoe UI", sans-serif',
     letterSpacing: "-0.02em",
     lineHeight: 1.1,
     textShadow: "0 2px 10px rgba(0, 229, 201, 0.3)",
-    "@keyframes gradientText": {
-      "0%": { backgroundPosition: "0% 50%" },
-      "50%": { backgroundPosition: "100% 50%" },
-      "100%": { backgroundPosition: "0% 50%" },
-    },
   }), []);
 
   const subtitleStyles = useMemo(() => ({
@@ -530,21 +510,6 @@ const FeaturesSection = memo(() => {
         transparent 100%)`,
       zIndex: 0,
       display: { xs: "none", md: "block" },
-      animation: "flowLine 3s ease-in-out infinite",
-      "@keyframes flowLine": {
-        "0%": { 
-          opacity: 0.3,
-          transform: "translateX(-50%) scaleY(0.8)"
-        },
-        "50%": { 
-          opacity: 0.6,
-          transform: "translateX(-50%) scaleY(1)"
-        },
-        "100%": { 
-          opacity: 0.3,
-          transform: "translateX(-50%) scaleY(0.8)"
-        },
-      }
     }
   }), []);
 

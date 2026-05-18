@@ -701,7 +701,7 @@ const AIInterview = () => {
     
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.lang = 'en-US';
+    recognition.lang = 'en-IN';
     
     recognition.onstart = () => {
       setIsListening(true);
@@ -1215,11 +1215,6 @@ const AIInterview = () => {
                 borderRadius: '50%',
                 backgroundColor: socketConnected ? '#4caf50' : '#f44336',
                 animation: socketConnected ? 'pulse 2s infinite' : 'none',
-                '@keyframes pulse': {
-                  '0%': { opacity: 1 },
-                  '50%': { opacity: 0.5 },
-                  '100%': { opacity: 1 }
-                }
               }}
             />
             <Typography 
@@ -1422,16 +1417,6 @@ const AIInterview = () => {
                   transform: 'scale(1.05)'
                 },
                 transition: 'all 0.3s ease',
-                '@keyframes micPulse': {
-                  '0%, 100%': { 
-                    boxShadow: '0 0 0 0 rgba(0, 191, 165, 0.4)',
-                    transform: 'scale(1)'
-                  },
-                  '50%': { 
-                    boxShadow: '0 0 0 8px rgba(0, 191, 165, 0)',
-                    transform: 'scale(1.1)'
-                  }
-                }
               }}
             >
               {isMicOn ? <MicIcon sx={{ fontSize: { xs: '0.8rem', md: '1.5rem' } }} /> : <MicOffIcon sx={{ fontSize: { xs: '0.8rem', md: '1.5rem' } }} />}
@@ -1641,16 +1626,6 @@ const AIInterview = () => {
                         animation: `voiceWave 1.2s ease-in-out infinite`,
                         animationDelay: `${bar * 0.1}s`,
                         height: { xs: '16px', md: '20px' },
-                        '@keyframes voiceWave': {
-                          '0%, 100%': { 
-                            transform: 'scaleY(0.3)',
-                            opacity: 0.4
-                          },
-                          '50%': { 
-                            transform: 'scaleY(1)',
-                            opacity: 1
-                          }
-                        }
                       }}
                     />
                   ))}
@@ -1659,11 +1634,7 @@ const AIInterview = () => {
                       fontSize: { xs: '1rem', md: '1.2rem' },
                       color: 'var(--primary-color)',
                       ml: 0.5,
-                      animation: 'pulse 2s ease-in-out infinite',
-                      '@keyframes pulse': {
-                        '0%, 100%': { opacity: 0.6 },
-                        '50%': { opacity: 1 }
-                      }
+                      animation: 'micIconPulse 2s ease-in-out infinite',
                     }} 
                   />
                 </Box>
@@ -2028,23 +1999,23 @@ const AIInterview = () => {
                 onPaste={handleInputPaste}
                 onCopy={handleInputCopy}
                 onCut={handleInputCut}
-                placeholder={isLoading ? "AI is responding..." : "Type your message..."}
+                placeholder={isLoading ? "AI is generating response..." : isAudioPlaying ? "AI is speaking..." : "Type your message..."}
                 variant="outlined"
                 size={window.innerWidth < 600 ? 'small' : 'medium'}
-                disabled={isLoading}
+                disabled={isLoading || isAudioPlaying}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    backgroundColor: isLoading ? 'rgba(255, 255, 255, 0.02)' : 'rgba(255, 255, 255, 0.05)',
+                    backgroundColor: (isLoading || isAudioPlaying) ? 'rgba(255, 255, 255, 0.02)' : 'rgba(255, 255, 255, 0.05)',
                     color: 'var(--text-primary)',
                     fontSize: { xs: '0.85rem', md: '1rem' },
                     '& fieldset': {
-                      borderColor: isLoading ? 'rgba(0, 191, 165, 0.1)' : 'rgba(0, 191, 165, 0.3)',
+                      borderColor: (isLoading || isAudioPlaying) ? 'rgba(0, 191, 165, 0.1)' : 'rgba(0, 191, 165, 0.3)',
                     },
                     '&:hover fieldset': {
-                      borderColor: isLoading ? 'rgba(0, 191, 165, 0.1)' : 'rgba(0, 191, 165, 0.5)',
+                      borderColor: (isLoading || isAudioPlaying) ? 'rgba(0, 191, 165, 0.1)' : 'rgba(0, 191, 165, 0.5)',
                     },
                     '&.Mui-focused fieldset': {
-                      borderColor: isLoading ? 'rgba(0, 191, 165, 0.2)' : 'var(--primary-color)',
+                      borderColor: (isLoading || isAudioPlaying) ? 'rgba(0, 191, 165, 0.2)' : 'var(--primary-color)',
                     },
                     '&.Mui-disabled': {
                       opacity: 0.6,
@@ -2059,7 +2030,7 @@ const AIInterview = () => {
               <Button
                 variant="contained"
                 onClick={handleSendMessage}
-                disabled={!inputValue.trim() || isLoading}
+                disabled={!inputValue.trim() || isLoading || isAudioPlaying}
                 size={window.innerWidth < 600 ? 'small' : 'medium'}
                 sx={{
                   backgroundColor: 'var(--primary-color)',

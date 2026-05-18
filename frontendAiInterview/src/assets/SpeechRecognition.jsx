@@ -29,7 +29,7 @@ const SpeechRecognitionComponent = () => {
     recognitionRef.current = new SpeechRecognition();
     recognitionRef.current.continuous = true;
     recognitionRef.current.interimResults = true;
-    recognitionRef.current.lang = 'en-US';
+    recognitionRef.current.lang = 'en-IN';
 
     recognitionRef.current.onresult = (event) => {
       let interimTranscript = '';
